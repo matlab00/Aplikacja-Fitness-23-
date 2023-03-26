@@ -10,7 +10,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="620.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.MainController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="620.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.MainController">
   <tabs>
       <Tab text="Dane">
         <content>
@@ -18,11 +18,11 @@
                <children>
                   <Label layoutX="18.0" layoutY="60.0" text="Płeć:" />
                   <ChoiceBox fx:id="sexChoiceBox" layoutX="62.0" layoutY="56.0" prefWidth="150.0" />
-                  <Label layoutX="14.0" layoutY="111.0" text="Masa:" />
-                  <Label layoutX="10.0" layoutY="163.0" text="Wzrost:" />
-                  <TextField fx:id="weightTextField" layoutX="62.0" layoutY="107.0" />
-                  <TextField fx:id="heightTextField" layoutX="62.0" layoutY="159.0" />
-                  <Label layoutX="15.0" layoutY="216.0" text="Wiek:" />
+                  <Label layoutX="17.0" layoutY="199.0" text="Masa:" />
+                  <Label layoutX="13.0" layoutY="151.0" text="Wzrost:" />
+                  <TextField fx:id="weightTextField" layoutX="63.0" layoutY="195.0" />
+                  <TextField fx:id="heightTextField" layoutX="63.0" layoutY="147.0" />
+                  <Label layoutX="17.0" layoutY="106.0" text="Wiek:" />
                   <TableView fx:id="dataTableView" layoutX="257.0" layoutY="28.0" prefHeight="288.0" prefWidth="325.0">
                     <columns>
                       <TableColumn fx:id="weightTableColumn" prefWidth="60.0" text="Masa" />
@@ -32,9 +32,11 @@
                         <TableColumn fx:id="dataDateTableColumn" prefWidth="99.33331298828125" text="Data" />
                     </columns>
                   </TableView>
-                  <Button layoutX="515.0" layoutY="331.0" mnemonicParsing="false" text="Statystyki" />
-                  <Button fx:id="dataAddButton" layoutX="164.0" layoutY="260.0" mnemonicParsing="false" onAction="#dataAddButtonOnAction" text="Dodaj" />
-                  <ChoiceBox fx:id="ageChoiceBox" layoutX="62.0" layoutY="212.0" prefWidth="150.0" />
+                  <Button fx:id="dataStatButton" layoutX="515.0" layoutY="331.0" mnemonicParsing="false" onAction="#dataStatButtonOnAction" text="Statystyki" />
+                  <Button fx:id="dataAddButton" layoutX="164.0" layoutY="284.0" mnemonicParsing="false" onAction="#dataAddButtonOnAction" text="Dodaj" />
+                  <ChoiceBox fx:id="ageChoiceBox" layoutX="62.0" layoutY="102.0" prefWidth="150.0" />
+                  <TextField fx:id="dataDateTextField" layoutX="63.0" layoutY="238.0" />
+                  <Label layoutX="18.0" layoutY="242.0" text="Data:" />
                </children></AnchorPane>
         </content>
       </Tab>

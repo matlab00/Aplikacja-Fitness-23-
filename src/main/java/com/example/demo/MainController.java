@@ -7,16 +7,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ResourceBundle;
 //endregion
 
@@ -52,6 +50,8 @@ public class MainController implements Initializable {
     public TableColumn<Data, Integer> bmiTableColumn;
     public TableView<Data> dataTableView;
     public ChoiceBox ageChoiceBox;
+    public Button dataStatButton;
+    public TextField dataDateTextField;
     //endregion
 
 
@@ -114,19 +114,23 @@ public class MainController implements Initializable {
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
         stage.show();
-
     }
 
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
 
-        //Data.BMR = 88.36 + 13.4 * Integer.parseInt(weightTextField.getText());
+        if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();
+        }
 
         Data data = new Data(
                 Integer.parseInt(weightTextField.getText()),
                 Integer.parseInt(heightTextField.getText()),
-                LocalDate.now().toString(),
+                getDate(),
                 calculateBMR()
-
         );
 
         dataTableView.getItems().add(data);
@@ -134,11 +138,51 @@ public class MainController implements Initializable {
     Double calculateBMR() {
 
         if (sexChoiceBox.getValue().toString() == "Mężczyzna") {
-            double bmr = 88.36 + 13.4 * Integer.parseInt(weightTextField.getText()) + 4.8 * Integer.parseInt(heightTextField.getText()) - 5.7 * (2023 - Integer.parseInt(ageChoiceBox.getValue().toString()));
+            double bmr = 88.36 + 13.4 * Integer.parseInt(weightTextField.getText()) + 4.8 * Integer.parseInt(heightTextField.getText()) - 5.7 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString()));
             return bmr;
         } else {
-            double bmr = 447.6 + 9.2 * Integer.parseInt(weightTextField.getText()) + 3.1 * Integer.parseInt(heightTextField.getText()) - 4.3 * (2023 - Integer.parseInt(ageChoiceBox.getValue().toString()));
+            double bmr = 447.6 + 9.2 * Integer.parseInt(weightTextField.getText()) + 3.1 * Integer.parseInt(heightTextField.getText()) - 4.3 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString()));
             return bmr;
         }
+    }
+
+    String getDate() {
+
+        if (dataDateTextField.getText().isEmpty()) {
+            String date = LocalDate.now().toString();
+            return date;
+        } else {
+            String date = dataDateTextField.getText();
+            return date;
+        }
+    }
+
+    public void dataStatButtonOnAction(ActionEvent actionEvent) {
+
+        ObservableList<Data> data = dataTableView.getItems();
+
+
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Data");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Waga");
+
+        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Waga/Data");
+
+        for (Data item : data) {
+            series.getData().add(new XYChart.Data(dataDateTableColumn.getCellData(item), weightTableColumn.getCellData(item)));
+        }
+
+        lineChart.getData().add(series);
+
+        Stage stage = new Stage();
+        Group root = new Group((lineChart));
+        Scene scene = new Scene(root, 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Statystyki");
+        stage.show();
     }
 }
