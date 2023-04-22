@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ResourceBundle;
@@ -75,9 +76,7 @@ public class MainController implements Initializable {
         bmiTableColumn.setCellValueFactory(new PropertyValueFactory<>("BMI"));
         dataDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
 
-
     }
-
 
     public void runButtonOnAction(ActionEvent actionEvent) {
 
@@ -115,8 +114,9 @@ public class MainController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
+
+
 
         if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -134,6 +134,26 @@ public class MainController implements Initializable {
         );
 
         dataTableView.getItems().add(data);
+
+        try {
+            DataDBConnection dataDBConnection = new DataDBConnection();
+
+
+            String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI) VALUES (?,?,?,?,?,?,?)";
+            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+                stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
+                stmt.setString(2,sexChoiceBox.getValue().toString());
+                stmt.setString(3,ageChoiceBox.getValue().toString());
+                stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
+                stmt.setString(5, dataDateTextField.getText());
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
     }
     Double calculateBMR() {
 
