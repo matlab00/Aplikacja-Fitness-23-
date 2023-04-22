@@ -5,7 +5,9 @@ Program będzie przyjmował dane personalne użytkownika, takie jak: płeć, wag
 
 Wybrany język: Java, JavaFX, SQLite
 
-<img width="465" alt="dane_1" src="https://user-images.githubusercontent.com/92376070/226321527-21e7ab78-47db-4840-9ef5-98d3a65abbf9.png">
+![1](https://user-images.githubusercontent.com/92376070/227793095-a5fbb929-54c6-41e0-99c8-65ff0fbb91bc.png)
+
+![2](https://user-images.githubusercontent.com/92376070/227793215-ab0854bf-e717-4cf4-ab85-71752e141901.png)
 
 <img width="463" alt="bieganie_2" src="https://user-images.githubusercontent.com/92376070/226321662-92f22ac5-4b8f-49bf-88fe-7059c75ec75c.png">
 
