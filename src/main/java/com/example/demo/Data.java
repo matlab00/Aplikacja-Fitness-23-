@@ -4,23 +4,33 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.time.Year;
+
 public class Data {
 
     private SimpleStringProperty sex;
     private SimpleIntegerProperty Masa;
     private SimpleIntegerProperty wzrost;
+
+    private Integer Id;
     private SimpleIntegerProperty age;
     private SimpleStringProperty data;
     private SimpleIntegerProperty BMI;
     static SimpleDoubleProperty BMR;
 
-    public Data(Integer Masa, Integer wzrost, String data, Double BMR) {
+    public Data(Integer Masa, Integer wzrost, String data, Double BMR, Integer Id) {
         this.Masa = new SimpleIntegerProperty(Masa);
         this.wzrost = new SimpleIntegerProperty(wzrost);
         this.data = new SimpleStringProperty(data);
         this.BMR = new SimpleDoubleProperty(BMR);
+        this.Id = Id;
     }
 
+
+    // region Getters and Setters
+    public Integer getId() {
+        return Id;
+    }
     public String getSex() {
         return sex.get();
     }
@@ -104,4 +114,5 @@ public class Data {
     public void setBMR(int BMR) {
         this.BMR.set(BMR);
     }
+    // endregion
 }

@@ -16,6 +16,8 @@ import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 //endregion
 
@@ -76,6 +78,31 @@ public class MainController implements Initializable {
         bmiTableColumn.setCellValueFactory(new PropertyValueFactory<>("BMI"));
         dataDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
 
+        updateDataTable();
+    }
+
+    private void updateDataTable() {
+        DataDBConnection dataDBConnection = new DataDBConnection();
+
+        Data[] data = dataDBConnection.getData();
+
+        ObservableList<Data> existingDataList = dataTableView.getItems();
+
+        List<Data> newObjects = new ArrayList<>();
+        for (Data newData : data) {
+            boolean isNew = true;
+            for (Data existingData : existingDataList) {
+                if (existingData.getId() == newData.getId()) {
+                    isNew = false;
+                    break;
+                }
+            }
+            if (isNew) {
+                newObjects.add(newData);
+            }
+        }
+        existingDataList.addAll(newObjects);
+        dataTableView.refresh();
     }
 
     public void runButtonOnAction(ActionEvent actionEvent) {
@@ -116,7 +143,7 @@ public class MainController implements Initializable {
     }
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
 
-
+        updateDataTable();
 
         if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -126,26 +153,18 @@ public class MainController implements Initializable {
             alert.showAndWait();
         }
 
-        Data data = new Data(
-                Integer.parseInt(weightTextField.getText()),
-                Integer.parseInt(heightTextField.getText()),
-                getDate(),
-                calculateBMR()
-        );
-
-        dataTableView.getItems().add(data);
-
         try {
             DataDBConnection dataDBConnection = new DataDBConnection();
 
-
             String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI) VALUES (?,?,?,?,?,?,?)";
             try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
                 stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
                 stmt.setString(2,sexChoiceBox.getValue().toString());
                 stmt.setString(3,ageChoiceBox.getValue().toString());
                 stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
                 stmt.setString(5, dataDateTextField.getText());
+                stmt.setDouble(6, calculateBMR());
                 int rowsAffected = stmt.executeUpdate();
                 System.out.println(rowsAffected + " wiersz dodany do tabeli");
             } catch (SQLException e) {
@@ -154,6 +173,7 @@ public class MainController implements Initializable {
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
+        updateDataTable();
     }
     Double calculateBMR() {
 
