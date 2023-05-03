@@ -1,8 +1,10 @@
 package com.example.demo;
 
 //region imports
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -10,15 +12,16 @@ import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 //endregion
 
 public class MainController implements Initializable {
@@ -55,6 +58,8 @@ public class MainController implements Initializable {
     public ChoiceBox ageChoiceBox;
     public Button dataStatButton;
     public TextField dataDateTextField;
+    public TextField addUserText;
+    public ChoiceBox selectUser;
     //endregion
 
 
@@ -78,18 +83,34 @@ public class MainController implements Initializable {
         bmiTableColumn.setCellValueFactory(new PropertyValueFactory<>("BMI"));
         dataDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
 
-        updateDataTable();
+        DataDBConnection dataDBConnection = new DataDBConnection();
+        ObservableList dataArray = dataDBConnection.getUser();
+        ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
+        System.out.println("Data: " + dataDBConnection.getData());
+        System.out.println("User: " + dataArray.toString());
+        selectUser.setItems(dataArray);
+        dataTableView.getItems().addAll(data2Array);
+
+
     }
 
-    private void updateDataTable() {
+    public void updateDataTable() {
         DataDBConnection dataDBConnection = new DataDBConnection();
-
-        Data[] data = dataDBConnection.getData();
-
+        Data[] newDataArray = dataDBConnection.getData();
         ObservableList<Data> existingDataList = dataTableView.getItems();
 
-        List<Data> newObjects = new ArrayList<>();
-        for (Data newData : data) {
+        // Update existing objects
+        for (Data existingData : existingDataList) {
+            for (Data newData : newDataArray) {
+                if (existingData.getId() == newData.getId()) {
+                    existingData.setBMR((int) newData.getBMR());
+                    break;
+                }
+            }
+        }
+
+        // Add new objects
+        for (Data newData : newDataArray) {
             boolean isNew = true;
             for (Data existingData : existingDataList) {
                 if (existingData.getId() == newData.getId()) {
@@ -98,12 +119,31 @@ public class MainController implements Initializable {
                 }
             }
             if (isNew) {
-                newObjects.add(newData);
+                existingDataList.add(newData);
             }
         }
-        existingDataList.addAll(newObjects);
-        dataTableView.refresh();
+
     }
+
+    private void updateUser() {
+        DataDBConnection dataDBConnection = new DataDBConnection();
+
+        ObservableList data = dataDBConnection.getUser();
+
+        ObservableList oldData = selectUser.getItems();
+
+        Set uniqueSet = new HashSet();
+        uniqueSet.addAll(data);
+        uniqueSet.addAll(oldData);
+
+        ObservableList newData = FXCollections.observableArrayList();
+
+        newData.addAll(uniqueSet);
+        selectUser.setItems(newData);
+
+    }
+
+
 
     public void runButtonOnAction(ActionEvent actionEvent) {
 
@@ -143,7 +183,6 @@ public class MainController implements Initializable {
     }
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
 
-        updateDataTable();
 
         if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -156,7 +195,7 @@ public class MainController implements Initializable {
         try {
             DataDBConnection dataDBConnection = new DataDBConnection();
 
-            String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI) VALUES (?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI, user_name) VALUES (?,?,?,?,?,?,?,?)";
             try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
 
                 stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
@@ -164,7 +203,8 @@ public class MainController implements Initializable {
                 stmt.setString(3,ageChoiceBox.getValue().toString());
                 stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
                 stmt.setString(5, dataDateTextField.getText());
-                stmt.setDouble(6, calculateBMR());
+                stmt.setInt(6, calculateBMR());
+                stmt.setString(8, selectUser.getValue().toString());
                 int rowsAffected = stmt.executeUpdate();
                 System.out.println(rowsAffected + " wiersz dodany do tabeli");
             } catch (SQLException e) {
@@ -173,15 +213,16 @@ public class MainController implements Initializable {
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
-        updateDataTable();
+            updateDataTable();
     }
-    Double calculateBMR() {
+    Integer calculateBMR() {
 
-        if (sexChoiceBox.getValue().toString() == "Mężczyzna") {
-            double bmr = 88.36 + 13.4 * Integer.parseInt(weightTextField.getText()) + 4.8 * Integer.parseInt(heightTextField.getText()) - 5.7 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString()));
+        if (sexChoiceBox.getValue().toString().equals("Mężczyzna")) {
+            Integer bmr = (int)Math.round(88.36 + 13.4 * Integer.parseInt(weightTextField.getText()) + 4.8 * Integer.parseInt(heightTextField.getText()) - 5.7 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString())));
+
             return bmr;
         } else {
-            double bmr = 447.6 + 9.2 * Integer.parseInt(weightTextField.getText()) + 3.1 * Integer.parseInt(heightTextField.getText()) - 4.3 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString()));
+            Integer bmr = (int)Math.round(447.6 + 9.2 * Integer.parseInt(weightTextField.getText()) + 3.1 * Integer.parseInt(heightTextField.getText()) - 4.3 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString())));
             return bmr;
         }
     }
@@ -224,5 +265,37 @@ public class MainController implements Initializable {
         stage.setScene(scene);
         stage.setTitle("Statystyki");
         stage.show();
+    }
+
+    public void addUserButtonOnAction(ActionEvent actionEvent) {
+        try {
+            DataDBConnection dataDBConnection = new DataDBConnection();
+
+            String sql = "INSERT INTO Users (user_name) VALUES (?)";
+            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
+                stmt.setString(1, addUserText.getText());
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+        updateUser();
+        addUserText.clear();
+    }
+
+    public void dataOnSelectionChanged(Event event) {
+        DataDBConnection dataDBConnection = new DataDBConnection();
+        ObservableList dataArray = dataDBConnection.getUser();
+        ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
+        System.out.println("Data: " + dataDBConnection.getData());
+        System.out.println("User: " + dataArray.toString());
+        selectUser.setItems(dataArray);
+        dataTableView.getItems().addAll(data2Array);
+
     }
 }

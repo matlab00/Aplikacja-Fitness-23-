@@ -16,13 +16,13 @@ public class Data {
     private SimpleIntegerProperty age;
     private SimpleStringProperty data;
     private SimpleIntegerProperty BMI;
-    static SimpleDoubleProperty BMR;
+    static SimpleIntegerProperty BMR;
 
-    public Data(Integer Masa, Integer wzrost, String data, Double BMR, Integer Id) {
+    public Data(Integer Masa, Integer wzrost, String data, Integer BMR, Integer Id) {
         this.Masa = new SimpleIntegerProperty(Masa);
         this.wzrost = new SimpleIntegerProperty(wzrost);
         this.data = new SimpleStringProperty(data);
-        this.BMR = new SimpleDoubleProperty(BMR);
+        this.BMR = new SimpleIntegerProperty(BMR);
         this.Id = Id;
     }
 
@@ -95,6 +95,10 @@ public class Data {
         return BMI.get();
     }
 
+    public static void setBMR(Integer BMR) {
+        Data.BMR.set(BMR);
+    }
+
     public SimpleIntegerProperty BMIProperty() {
         return BMI;
     }
@@ -107,7 +111,7 @@ public class Data {
         return BMR.get();
     }
 
-    public SimpleDoubleProperty BMRProperty() {
+    public SimpleIntegerProperty BMRProperty() {
         return BMR;
     }
 

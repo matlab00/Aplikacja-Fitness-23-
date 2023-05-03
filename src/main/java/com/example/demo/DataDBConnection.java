@@ -1,7 +1,12 @@
 package com.example.demo;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ChoiceBox;
+
 import java.sql.*;
 import java.util.ArrayList;
+
 
 public class DataDBConnection {
 
@@ -18,9 +23,10 @@ public class DataDBConnection {
     public Data[] getData() {
         ArrayList<Data> dataList = new ArrayList<>();
 
+        String profile = FXMLConnector.LogInfo.getLogData();
         try {
 
-            String query = "SELECT * FROM DATA";
+            String query = "SELECT * FROM DATA" ;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -30,9 +36,16 @@ public class DataDBConnection {
                        resultSet.getInt("weight"),
                         resultSet.getInt("height"),
                         resultSet.getString("date"),
-                        resultSet.getDouble("BMR"),
+                        resultSet.getInt("BMR"),
                         resultSet.getInt("id")
                 );
+                System.out.println("IMPORT Z BAZY DANYCH:");
+                System.out.println("Weight: " + data.getMasa());
+                System.out.println("Height: " + data.getWzrost());
+                System.out.println("Date: " + data.getData());
+                System.out.println("BMR: " + data.getBMR());
+                System.out.println("ID: " + data.getId());
+                System.out.println("----------------------------");
                 dataList.add(data);
             }
 
@@ -42,6 +55,35 @@ public class DataDBConnection {
         Data[] dataArray = new Data[dataList.size()];
         dataArray = dataList.toArray(dataArray);
         return dataArray;
+    }
+
+    public ObservableList getUser() {
+        ArrayList<User> dataList = new ArrayList<>();
+
+        ObservableList data = FXCollections.observableArrayList();
+        try {
+
+            String query = "SELECT * FROM USERS";
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+            while (resultSet.next()) {
+                /*User data = new User(
+                        resultSet.getString("user_name")
+                );
+                System.out.println("Weight: " + data.getUser_name());
+                dataList.add(data);*/
+                data.add((resultSet.getString("user_name")));
+                System.out.println(resultSet.getString("user_name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        User[] dataArray = new User[dataList.size()];
+        dataArray = dataList.toArray(dataArray);
+        return data;
     }
 
 
