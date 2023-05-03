@@ -85,16 +85,17 @@ public class MainController implements Initializable {
 
         DataDBConnection dataDBConnection = new DataDBConnection();
         ObservableList dataArray = dataDBConnection.getUser();
-        ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
-        System.out.println("Data: " + dataDBConnection.getData());
-        System.out.println("User: " + dataArray.toString());
+        //ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
+        //System.out.println("Data: " + dataDBConnection.getData());
+        //System.out.println("User: " + dataArray.toString());
         selectUser.setItems(dataArray);
-        dataTableView.getItems().addAll(data2Array);
+        //dataTableView.getItems().addAll(data2Array);
 
 
     }
 
     public void updateDataTable() {
+        dataTableView.getItems().clear();
         DataDBConnection dataDBConnection = new DataDBConnection();
         Data[] newDataArray = dataDBConnection.getData();
         ObservableList<Data> existingDataList = dataTableView.getItems();
@@ -289,13 +290,15 @@ public class MainController implements Initializable {
     }
 
     public void dataOnSelectionChanged(Event event) {
-        DataDBConnection dataDBConnection = new DataDBConnection();
-        ObservableList dataArray = dataDBConnection.getUser();
-        ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
-        System.out.println("Data: " + dataDBConnection.getData());
-        System.out.println("User: " + dataArray.toString());
-        selectUser.setItems(dataArray);
-        dataTableView.getItems().addAll(data2Array);
+        updateDataTable();
+        FXMLConnector.LogInfo.setLogData(selectUser.getValue().toString());
+        System.out.println(FXMLConnector.LogInfo.getLogData());
 
+    }
+
+    public void selectUserOnAction(MouseEvent mouseEvent) {
+        //updateDataTable();
+
+        System.out.println(FXMLConnector.LogInfo.getLogData());
     }
 }

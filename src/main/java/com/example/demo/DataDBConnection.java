@@ -24,9 +24,11 @@ public class DataDBConnection {
         ArrayList<Data> dataList = new ArrayList<>();
 
         String profile = FXMLConnector.LogInfo.getLogData();
+        System.out.println("Profile: " + profile);
         try {
 
-            String query = "SELECT * FROM DATA" ;
+            String query = "SELECT * FROM DATA where user_name = '" + profile + "'";
+            System.out.println("Query: "+query);
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
