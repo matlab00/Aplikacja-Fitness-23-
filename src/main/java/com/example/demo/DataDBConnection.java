@@ -20,8 +20,8 @@ public class DataDBConnection {
         }
     }
 
-    public Data[] getData() {
-        ArrayList<Data> dataList = new ArrayList<>();
+    public ObservableList<Data> getData() {
+        ObservableList<Data> dataList = FXCollections.observableArrayList();
 
         String profile = FXMLConnector.LogInfo.getLogData();
         System.out.println("Profile: " + profile);
@@ -56,7 +56,7 @@ public class DataDBConnection {
         }
         Data[] dataArray = new Data[dataList.size()];
         dataArray = dataList.toArray(dataArray);
-        return dataArray;
+        return dataList;
     }
 
     public ObservableList getUser() {

@@ -60,6 +60,8 @@ public class MainController implements Initializable {
     public TextField dataDateTextField;
     public TextField addUserText;
     public ChoiceBox selectUser;
+    public Button addUserButton;
+    public Label activeUserLabel;
     //endregion
 
 
@@ -96,34 +98,11 @@ public class MainController implements Initializable {
 
     public void updateDataTable() {
         dataTableView.getItems().clear();
+        System.out.println("table cleared");
         DataDBConnection dataDBConnection = new DataDBConnection();
-        Data[] newDataArray = dataDBConnection.getData();
-        ObservableList<Data> existingDataList = dataTableView.getItems();
-
-        // Update existing objects
-        for (Data existingData : existingDataList) {
-            for (Data newData : newDataArray) {
-                if (existingData.getId() == newData.getId()) {
-                    existingData.setBMR((int) newData.getBMR());
-                    break;
-                }
-            }
-        }
-
-        // Add new objects
-        for (Data newData : newDataArray) {
-            boolean isNew = true;
-            for (Data existingData : existingDataList) {
-                if (existingData.getId() == newData.getId()) {
-                    isNew = false;
-                    break;
-                }
-            }
-            if (isNew) {
-                existingDataList.add(newData);
-            }
-        }
-
+        ObservableList<Data> newDataArray = FXCollections.observableArrayList(dataDBConnection.getData());
+        dataTableView.getItems().addAll(newDataArray);
+        dataTableView.refresh();
     }
 
     private void updateUser() {
@@ -143,8 +122,6 @@ public class MainController implements Initializable {
         selectUser.setItems(newData);
 
     }
-
-
 
     public void runButtonOnAction(ActionEvent actionEvent) {
 
@@ -203,7 +180,11 @@ public class MainController implements Initializable {
                 stmt.setString(2,sexChoiceBox.getValue().toString());
                 stmt.setString(3,ageChoiceBox.getValue().toString());
                 stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
-                stmt.setString(5, dataDateTextField.getText());
+                if (!dataDateTextField.getText().isEmpty()) {
+                    stmt.setString(5, dataDateTextField.getText());
+                } else {
+                    stmt.setString(5, getDate());
+                }
                 stmt.setInt(6, calculateBMR());
                 stmt.setString(8, selectUser.getValue().toString());
                 int rowsAffected = stmt.executeUpdate();
@@ -289,16 +270,50 @@ public class MainController implements Initializable {
         addUserText.clear();
     }
 
-    public void dataOnSelectionChanged(Event event) {
-        updateDataTable();
+    public void changeUserButtonOnAction(ActionEvent actionEvent) {
+
         FXMLConnector.LogInfo.setLogData(selectUser.getValue().toString());
         System.out.println(FXMLConnector.LogInfo.getLogData());
-
+        activeUserLabel.setText(FXMLConnector.LogInfo.getLogData());
+        updateDataTable();
     }
 
-    public void selectUserOnAction(MouseEvent mouseEvent) {
-        //updateDataTable();
+    public void deleteUserOnAction(ActionEvent actionEvent) {
 
-        System.out.println(FXMLConnector.LogInfo.getLogData());
+        String profile = FXMLConnector.LogInfo.getLogData();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Potwierdzenie");
+        alert.setHeaderText("Czy na pewno chcesz usunąć profil?");
+        alert.setContentText("Kliknij OK, aby kontynuować.");
+
+        ButtonType buttonTypeOK = new ButtonType("OK");
+        ButtonType buttonTypeCancel = new ButtonType("Anuluj", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeOK, buttonTypeCancel);
+
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == buttonTypeOK) {
+                try {
+                    DataDBConnection dataDBConnection = new DataDBConnection();
+                    String query = "DELETE FROM Data where user_name = '"+profile+"'";
+                    String sql = "INSERT INTO Da";
+                    try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(query)) {
+
+                        int rowsAffected = stmt.executeUpdate();
+                        System.out.println(profile + "usunięty");
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException(e);
+                }
+                updateUser();
+                updateDataTable();
+            } else {
+                System.out.println("no nie");
+            }
+        });
+
+
     }
 }

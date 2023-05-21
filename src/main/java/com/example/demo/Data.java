@@ -16,7 +16,7 @@ public class Data {
     private SimpleIntegerProperty age;
     private SimpleStringProperty data;
     private SimpleIntegerProperty BMI;
-    static SimpleIntegerProperty BMR;
+    private SimpleIntegerProperty BMR;
 
     public Data(Integer Masa, Integer wzrost, String data, Integer BMR, Integer Id) {
         this.Masa = new SimpleIntegerProperty(Masa);
@@ -95,10 +95,9 @@ public class Data {
         return BMI.get();
     }
 
-    public static void setBMR(Integer BMR) {
-        Data.BMR.set(BMR);
+    public void setId(Integer id) {
+        Id = id;
     }
-
     public SimpleIntegerProperty BMIProperty() {
         return BMI;
     }
@@ -107,7 +106,7 @@ public class Data {
         this.BMI.set(BMI);
     }
 
-    public double getBMR() {
+    public Integer getBMR() {
         return BMR.get();
     }
 
@@ -119,4 +118,5 @@ public class Data {
         this.BMR.set(BMR);
     }
     // endregion
+
 }
