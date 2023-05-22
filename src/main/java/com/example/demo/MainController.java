@@ -106,6 +106,7 @@ public class MainController implements Initializable {
     }
 
     private void updateUser() {
+        selectUser.getItems().clear();
         DataDBConnection dataDBConnection = new DataDBConnection();
 
         ObservableList data = dataDBConnection.getUser();
@@ -295,10 +296,14 @@ public class MainController implements Initializable {
                 try {
                     DataDBConnection dataDBConnection = new DataDBConnection();
                     String query = "DELETE FROM Data where user_name = '"+profile+"'";
-                    String sql = "INSERT INTO Da";
-                    try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(query)) {
+                    String query2 = "DELETE FROM Users where user_name = '"+profile+"'";
+                    try (Connection connection = dataDBConnection.getConnection()) {
 
-                        int rowsAffected = stmt.executeUpdate();
+                        PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+                        PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+
+                        int rowsAffected1 = preparedStatement1.executeUpdate();
+                        int rowsAffected2 = preparedStatement2.executeUpdate();
                         System.out.println(profile + "usunięty");
 
                     } catch (SQLException e) {
