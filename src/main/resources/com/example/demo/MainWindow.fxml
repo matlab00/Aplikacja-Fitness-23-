@@ -24,7 +24,7 @@
                   <Label layoutX="45.0" layoutY="293.0" text="Dodaj użytkownika" />
                   <Button fx:id="changeUserButton" layoutX="402.0" layoutY="161.0" mnemonicParsing="false" onAction="#changeUserButtonOnAction" text="Zmień" />
                   <Label layoutX="346.0" layoutY="328.0" text="Aktywny użytkownik:" />
-                  <Label fx:id="activeUserLabel" layoutX="495.0" layoutY="328.0" text="User" />
+                  <Label fx:id="activeUserLabel" layoutX="467.0" layoutY="328.0" text="Brak" />
                   <Button fx:id="deleteUser" layoutX="519.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteUserOnAction" text="Usuń profil" />
                </children>
             </AnchorPane>

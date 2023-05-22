@@ -6,9 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
@@ -159,50 +161,53 @@ public class MainController implements Initializable {
 
         lineChart.getData().add(series);
 
-        Stage stage = new Stage();
-        Group root = new Group((lineChart));
-        Scene scene = new Scene(root, 600, 400);
-        stage.setScene(scene);
-        stage.show();
+
     }
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
 
 
-        if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Brak danych");
-            alert.setHeaderText("Błąd");
-            alert.setContentText("Brak wymaganych danych");
-            alert.showAndWait();
-        }
+        System.out.println("user is: "+FXMLConnector.LogInfo.getLogData());
 
-        try {
-            DataDBConnection dataDBConnection = new DataDBConnection();
-
-            String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI, user_name) VALUES (?,?,?,?,?,?,?,?)";
-            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
-
-                stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
-                stmt.setString(2,sexChoiceBox.getValue().toString());
-                stmt.setString(3,ageChoiceBox.getValue().toString());
-                stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
-                if (!getDate().isEmpty()) {
-                    stmt.setString(5, getDate());
-                } else {
-                    stmt.setString(5, getCurrentDate());
-                }
-                stmt.setInt(6, calculateBMR());
-                stmt.setInt(7, calculateBMI());
-                stmt.setString(8, selectUser.getValue().toString());
-                int rowsAffected = stmt.executeUpdate();
-                System.out.println(rowsAffected + " wiersz dodany do tabeli");
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Brak danych");
+                alert.setHeaderText("Błąd");
+                alert.setContentText("Brak wymaganych danych");
+                alert.showAndWait();
             }
-        } catch (NumberFormatException e) {
-            throw new RuntimeException(e);
-        }
+
+            try {
+                DataDBConnection dataDBConnection = new DataDBConnection();
+
+                String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI, user_name) VALUES (?,?,?,?,?,?,?,?)";
+                try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
+                    stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
+                    stmt.setString(2, sexChoiceBox.getValue().toString());
+                    stmt.setString(3, ageChoiceBox.getValue().toString());
+                    stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
+                    //if (!getDate().toString().isEmpty()) {
+                        stmt.setString(5, getDate());
+                   // } else {
+                      //  stmt.setString(5, getCurrentDate());
+                  //  }
+                    stmt.setInt(6, calculateBMR());
+                    stmt.setInt(7, calculateBMI());
+                    stmt.setString(8, selectUser.getValue().toString());
+                    int rowsAffected = stmt.executeUpdate();
+                    System.out.println(rowsAffected + " wiersz dodany do tabeli");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } catch (NumberFormatException | NullPointerException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Brak danych");
+                alert.setHeaderText("Błąd");
+                alert.setContentText("Brak wymaganych danych");
+                alert.showAndWait();
+            }
             updateDataTable();
+
     }
     private Integer calculateBMR() {
 
@@ -232,12 +237,25 @@ public class MainController implements Initializable {
         }
     }
 
+
     public void dataStatButtonOnAction(ActionEvent actionEvent) {
 
+        dataTableView.getSortOrder().add(dataDateTableColumn);
+        dataDateTableColumn.setSortType(TableColumn.SortType.ASCENDING);
+        dataTableView.sort();
+
         ObservableList<Data> data = dataTableView.getItems();
+        FXMLConnector.LogInfo.setObservableList(data);
+        TableColumn[] tableColumns = new TableColumn[5];
+        tableColumns[0] = dataDateTableColumn;
+        tableColumns[1] = bmrTableColumn;
+        tableColumns[2] = bmiTableColumn;
+        tableColumns[3] = weightTableColumn;
+        FXMLConnector.LogInfo.setTableColumn(tableColumns);
 
 
-        CategoryAxis xAxis = new CategoryAxis();
+
+        /*CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Data");
 
         NumberAxis yAxis = new NumberAxis();
@@ -253,39 +271,41 @@ public class MainController implements Initializable {
             series.getData().add(new XYChart.Data(dataDateTableColumn.getCellData(item), weightTableColumn.getCellData(item)));
         }
 
-        lineChart.getData().add(series);
-        lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.X_AXIS);
+        lineChart.getData().add(series);*/
 
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("StatWindow.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Statystyki");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
 
-
-        Stage stage = new Stage();
-        //Group root = new Group((lineChart));
-        //Scene scene = new Scene(root, 600, 400);
-        //stage.setScene(scene);
-       // stage.setTitle("Statystyki");
-       // stage.show();
-        start(stage);
+        }
     }
 
     public void addUserButtonOnAction(ActionEvent actionEvent) {
-        try {
-            DataDBConnection dataDBConnection = new DataDBConnection();
+        if (!(addUserText.getText().toString().length() < 6)) {
+            try {
+                DataDBConnection dataDBConnection = new DataDBConnection();
 
-            String sql = "INSERT INTO Users (user_name) VALUES (?)";
-            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+                String sql = "INSERT INTO Users (user_name) VALUES (?)";
+                try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
 
-                stmt.setString(1, addUserText.getText());
-                int rowsAffected = stmt.executeUpdate();
-                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+                    stmt.setString(1, addUserText.getText());
+                    int rowsAffected = stmt.executeUpdate();
+                    System.out.println(rowsAffected + " wiersz dodany do tabeli");
 
-            } catch (SQLException e) {
-                e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(e);
             }
-        } catch (NumberFormatException e) {
-            throw new RuntimeException(e);
-        }
-        updateUser();
-        addUserText.clear();
+            updateUser();
+            addUserText.clear();
+        } else {alert("Nazwa użytkownika musi mieć conajmniej 6 znaków ");}
     }
 
     public void changeUserButtonOnAction(ActionEvent actionEvent) {
@@ -334,6 +354,8 @@ public class MainController implements Initializable {
             } else {
                 System.out.println("no nie");
             }
+            activeUserLabel.setText("Brak");
+
         });
     }
     public String getDate() {
@@ -369,5 +391,13 @@ public class MainController implements Initializable {
         primaryStage.setScene(scene);
 
         primaryStage.show();
+    }
+
+    public void alert(String text){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Błąd");
+        alert.setHeaderText("Błąd");
+        alert.setContentText(text);
+        alert.showAndWait();
     }
 }
