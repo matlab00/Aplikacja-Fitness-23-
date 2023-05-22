@@ -18,11 +18,12 @@ public class Data {
     private SimpleIntegerProperty BMI;
     private SimpleIntegerProperty BMR;
 
-    public Data(Integer Masa, Integer wzrost, String data, Integer BMR, Integer Id) {
+    public Data(Integer Masa, Integer wzrost, String data, Integer BMR, Integer BMI, Integer Id) {
         this.Masa = new SimpleIntegerProperty(Masa);
         this.wzrost = new SimpleIntegerProperty(wzrost);
         this.data = new SimpleStringProperty(data);
         this.BMR = new SimpleIntegerProperty(BMR);
+        this.BMI = new SimpleIntegerProperty(BMI);
         this.Id = Id;
     }
 

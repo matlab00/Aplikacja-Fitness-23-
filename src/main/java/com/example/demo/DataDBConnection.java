@@ -39,6 +39,7 @@ public class DataDBConnection {
                         resultSet.getInt("height"),
                         resultSet.getString("date"),
                         resultSet.getInt("BMR"),
+                        resultSet.getInt("BMI"),
                         resultSet.getInt("id")
                 );
                 System.out.println("IMPORT Z BAZY DANYCH:");

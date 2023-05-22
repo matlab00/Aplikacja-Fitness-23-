@@ -7,18 +7,21 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +65,7 @@ public class MainController implements Initializable {
     public ChoiceBox selectUser;
     public Button addUserButton;
     public Label activeUserLabel;
+    public DatePicker dataDatePicker;
     //endregion
 
 
@@ -103,6 +107,7 @@ public class MainController implements Initializable {
         ObservableList<Data> newDataArray = FXCollections.observableArrayList(dataDBConnection.getData());
         dataTableView.getItems().addAll(newDataArray);
         dataTableView.refresh();
+
     }
 
     private void updateUser() {
@@ -181,12 +186,13 @@ public class MainController implements Initializable {
                 stmt.setString(2,sexChoiceBox.getValue().toString());
                 stmt.setString(3,ageChoiceBox.getValue().toString());
                 stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
-                if (!dataDateTextField.getText().isEmpty()) {
-                    stmt.setString(5, dataDateTextField.getText());
-                } else {
+                if (!getDate().isEmpty()) {
                     stmt.setString(5, getDate());
+                } else {
+                    stmt.setString(5, getCurrentDate());
                 }
                 stmt.setInt(6, calculateBMR());
+                stmt.setInt(7, calculateBMI());
                 stmt.setString(8, selectUser.getValue().toString());
                 int rowsAffected = stmt.executeUpdate();
                 System.out.println(rowsAffected + " wiersz dodany do tabeli");
@@ -198,7 +204,7 @@ public class MainController implements Initializable {
         }
             updateDataTable();
     }
-    Integer calculateBMR() {
+    private Integer calculateBMR() {
 
         if (sexChoiceBox.getValue().toString().equals("Mężczyzna")) {
             Integer bmr = (int)Math.round(88.36 + 13.4 * Integer.parseInt(weightTextField.getText()) + 4.8 * Integer.parseInt(heightTextField.getText()) - 5.7 * (Year.now().getValue() - Integer.parseInt(ageChoiceBox.getValue().toString())));
@@ -210,7 +216,12 @@ public class MainController implements Initializable {
         }
     }
 
-    String getDate() {
+    private Integer calculateBMI() {
+        Integer bmi = Integer.parseInt(weightTextField.getText())/(Integer.parseInt(heightTextField.getText())/100)^2;
+        return bmi;
+    }
+
+    String getCurrentDate() {
 
         if (dataDateTextField.getText().isEmpty()) {
             String date = LocalDate.now().toString();
@@ -236,18 +247,24 @@ public class MainController implements Initializable {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Waga/Data");
 
+        data.sort(Comparator.comparing(item -> dataDateTableColumn.getCellData(item)));
+
         for (Data item : data) {
             series.getData().add(new XYChart.Data(dataDateTableColumn.getCellData(item), weightTableColumn.getCellData(item)));
         }
 
         lineChart.getData().add(series);
+        lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.X_AXIS);
+
+
 
         Stage stage = new Stage();
-        Group root = new Group((lineChart));
-        Scene scene = new Scene(root, 600, 400);
-        stage.setScene(scene);
-        stage.setTitle("Statystyki");
-        stage.show();
+        //Group root = new Group((lineChart));
+        //Scene scene = new Scene(root, 600, 400);
+        //stage.setScene(scene);
+       // stage.setTitle("Statystyki");
+       // stage.show();
+        start(stage);
     }
 
     public void addUserButtonOnAction(ActionEvent actionEvent) {
@@ -318,7 +335,39 @@ public class MainController implements Initializable {
                 System.out.println("no nie");
             }
         });
+    }
+    public String getDate() {
+        LocalDate date = dataDatePicker.getValue();
+        String formatedDate = date.format((DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        return formatedDate;
+    }
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Statystyki");
 
+        // Create radio buttons
+        RadioButton radioButton1 = new RadioButton("BMR");
+        RadioButton radioButton2 = new RadioButton("BMI");
+        RadioButton radioButton3 = new RadioButton("Waga");
 
+        // Create a toggle group and add radio buttons to it
+        ToggleGroup toggleGroup = new ToggleGroup();
+        radioButton1.setToggleGroup(toggleGroup);
+        radioButton2.setToggleGroup(toggleGroup);
+        radioButton3.setToggleGroup(toggleGroup);
+
+        // Create buttons
+        Button okButton = new Button("OK");
+        Button cancelButton = new Button("Cancel");
+
+        // Create a vertical layout and add components to it
+        VBox vbox = new VBox(10); // spacing between components
+        vbox.setPadding(new Insets(10)); // padding around the layout
+        vbox.getChildren().addAll(radioButton1, radioButton2, radioButton3, okButton, cancelButton);
+
+        // Create a scene and set it on the primary stage
+        Scene scene = new Scene(vbox, 200, 200);
+        primaryStage.setScene(scene);
+
+        primaryStage.show();
     }
 }
