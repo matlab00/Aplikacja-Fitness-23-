@@ -8,9 +8,38 @@ public class Bieganie {
     private SimpleIntegerProperty dystans;
     private SimpleIntegerProperty kalorie;
 
+    public int getMet() {
+        return met.get();
+    }
+
+    public SimpleIntegerProperty metProperty() {
+        return met;
+    }
+
+    public void setMet(int met) {
+        this.met.set(met);
+    }
+
+    public void setKalorie(int kalorie) {
+        this.kalorie.set(kalorie);
+    }
+
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer id) {
+        Id = id;
+    }
+
+    public void setDystans(int dystans) {
+        this.dystans.set(dystans);
+    }
+
     private SimpleIntegerProperty met;
     private SimpleIntegerProperty czas;
     private SimpleStringProperty data;
+    private Integer Id;
 
     public int getCzas() {
         return czas.get();

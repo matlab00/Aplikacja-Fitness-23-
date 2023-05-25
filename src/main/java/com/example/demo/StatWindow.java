@@ -53,6 +53,7 @@ public class StatWindow {
             for (Data item : data) {
                 series.getData().add(new XYChart.Data(tableColumns[0].getCellData(item), tableColumns[2].getCellData(item)));
             }
+
             series.getData().sort(Comparator.comparing(XYChart.Data::getXValue));
             lineChart.getData().add(series);
         } else {lineChart.getData().clear();}
