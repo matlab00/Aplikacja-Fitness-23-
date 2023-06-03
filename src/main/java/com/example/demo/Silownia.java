@@ -4,49 +4,22 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Bieganie {
-
-    private SimpleDoubleProperty dystans;
-    private SimpleIntegerProperty kalorie;
+public class Silownia {
     private SimpleDoubleProperty met;
+    private SimpleIntegerProperty kalorie;
     private SimpleDoubleProperty czas;
     private SimpleStringProperty data;
+    private SimpleStringProperty cwiczenie;
     private Integer Id;
 
-    public Bieganie(Double dystans, Integer kalorie, Double czas, String data, Double met, Integer Id ) {
+    public Silownia(String cwiczenie, Integer kalorie, Double czas, String data, Double met, Integer Id ) {
 
-        this.dystans = new SimpleDoubleProperty(dystans);
+        this.cwiczenie = new SimpleStringProperty(cwiczenie);
         this.kalorie = new SimpleIntegerProperty(kalorie);
         this.data = new SimpleStringProperty(data);
         this.czas = new SimpleDoubleProperty(czas);
         this.met = new SimpleDoubleProperty(met);
         this.Id = Id;
-    }
-
-    //region Getters and Setters
-
-    public double getDystans() {
-        return dystans.get();
-    }
-
-    public SimpleDoubleProperty dystansProperty() {
-        return dystans;
-    }
-
-    public void setDystans(double dystans) {
-        this.dystans.set(dystans);
-    }
-
-    public int getKalorie() {
-        return kalorie.get();
-    }
-
-    public SimpleIntegerProperty kalorieProperty() {
-        return kalorie;
-    }
-
-    public void setKalorie(int kalorie) {
-        this.kalorie.set(kalorie);
     }
 
     public double getMet() {
@@ -59,6 +32,18 @@ public class Bieganie {
 
     public void setMet(double met) {
         this.met.set(met);
+    }
+
+    public int getKalorie() {
+        return kalorie.get();
+    }
+
+    public SimpleIntegerProperty kalorieProperty() {
+        return kalorie;
+    }
+
+    public void setKalorie(int kalorie) {
+        this.kalorie.set(kalorie);
     }
 
     public double getCzas() {
@@ -85,6 +70,18 @@ public class Bieganie {
         this.data.set(data);
     }
 
+    public String getCwiczenie() {
+        return cwiczenie.get();
+    }
+
+    public SimpleStringProperty cwiczenieProperty() {
+        return cwiczenie;
+    }
+
+    public void setCwiczenie(String cwiczenie) {
+        this.cwiczenie.set(cwiczenie);
+    }
+
     public Integer getId() {
         return Id;
     }
@@ -92,6 +89,4 @@ public class Bieganie {
     public void setId(Integer id) {
         Id = id;
     }
-
-    //endregion
 }

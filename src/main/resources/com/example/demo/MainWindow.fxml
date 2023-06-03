@@ -84,21 +84,20 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TextField layoutX="155.0" layoutY="14.0" prefHeight="25.0" prefWidth="50.0" promptText="Czas" AnchorPane.leftAnchor="155.0" />
-                  <TableView layoutX="10.0" layoutY="57.0" prefHeight="300.0" prefWidth="600.0">
+                  <TextField fx:id="gymTimeTextField" layoutX="193.0" layoutY="14.0" prefHeight="25.0" prefWidth="50.0" promptText="Czas" AnchorPane.leftAnchor="193.0" />
+                  <TableView fx:id="gymTableView" layoutX="10.0" layoutY="57.0" prefHeight="300.0" prefWidth="600.0">
                     <columns>
-                      <TableColumn prefWidth="132.66665649414062" text="Ćwiczenie" />
-                      <TableColumn prefWidth="99.33331298828125" text="Czas" />
-                        <TableColumn prefWidth="88.0" text="MET" />
-                        <TableColumn prefWidth="92.00006103515625" text="Kalorie" />
-                        <TableColumn prefWidth="184.6666259765625" text="Data" />
+                      <TableColumn fx:id="gymExTableColumn" prefWidth="132.66665649414062" text="Ćwiczenie" />
+                      <TableColumn fx:id="gymTimeTableColumn" prefWidth="99.33331298828125" text="Czas" />
+                        <TableColumn fx:id="gymMetTableColumn" prefWidth="88.0" text="MET" />
+                        <TableColumn fx:id="gymCalorieTableColumn" prefWidth="92.00006103515625" text="Kalorie" />
+                        <TableColumn fx:id="gymDateTableColumn" prefWidth="184.6666259765625" text="Data" />
                     </columns>
                   </TableView>
-                  <TextField layoutX="284.0" layoutY="14.0" prefHeight="25.0" prefWidth="128.0" promptText="Data" />
-                  <Button layoutX="432.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Dodaj" />
-                  <ChoiceBox layoutX="11.0" layoutY="14.0" prefHeight="25.0" prefWidth="130.0" />
-                  <Button layoutX="529.0" layoutY="14.0" mnemonicParsing="false" text="Statystyki" />
-                  <ChoiceBox layoutX="216.0" layoutY="14.0" prefHeight="25.0" prefWidth="56.0" />
+                  <Button fx:id="gymAddButton" layoutX="432.0" layoutY="14.0" mnemonicParsing="false" onAction="#gymAddButtonOnAction" prefHeight="25.0" prefWidth="80.0" text="Dodaj" />
+                  <ChoiceBox fx:id="gymChoiceBox" layoutX="11.0" layoutY="14.0" prefHeight="25.0" prefWidth="163.0" />
+                  <Button fx:id="gymStatButton" layoutX="529.0" layoutY="14.0" mnemonicParsing="false" text="Statystyki" />
+                  <DatePicker fx:id="gymDatePicker" layoutX="266.0" layoutY="14.0" prefHeight="25.0" prefWidth="150.0" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -106,23 +105,22 @@
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TableView layoutX="10.0" layoutY="57.0" prefHeight="247.0" prefWidth="600.0">
+                  <TableView fx:id="foodTableView" layoutX="10.0" layoutY="57.0" prefHeight="247.0" prefWidth="600.0">
                     <columns>
-                      <TableColumn prefWidth="150.0" text="Posiłek" />
-                      <TableColumn prefWidth="150.0" text="Kalorie" />
-                        <TableColumn prefWidth="150.0" text="Rodzaj" />
-                        <TableColumn prefWidth="150.0" text="Data" />
+                      <TableColumn fx:id="foodMealTableColumn" prefWidth="150.0" text="Posiłek" />
+                      <TableColumn fx:id="foodCaloriesTableColumn" prefWidth="150.0" text="Kalorie" />
+                        <TableColumn fx:id="foodCategoryTableColumn" prefWidth="150.0" text="Rodzaj" />
+                        <TableColumn fx:id="foodDateTableColumn" prefWidth="150.0" text="Data" />
                     </columns>
                   </TableView>
-                  <ChoiceBox fx:id="foodChoiceBox" layoutX="208.0" layoutY="14.0" prefHeight="25.0" prefWidth="101.0" />
-                  <TextField layoutX="14.0" layoutY="14.0" prefWidth="120.0" promptText="Posiłek" AnchorPane.leftAnchor="10.0" />
-                  <TextField layoutX="141.0" layoutY="14.0" prefWidth="50.0" promptText="Kalorie" />
-                  <TextField layoutX="324.0" layoutY="14.0" prefHeight="25.0" prefWidth="102.0" promptText="Data" />
-                  <Button layoutX="442.0" layoutY="14.0" mnemonicParsing="false" prefWidth="80.0" text="Dodaj" />
-                  <TextField layoutX="14.0" layoutY="322.0" prefWidth="120.0" promptText="Data" />
-                  <TextField layoutX="152.0" layoutY="322.0" prefWidth="50.0" promptText="Kcal" />
-                  <TextField editable="false" layoutX="235.0" layoutY="322.0" promptText="Zapotrzebowanie Kcal" />
-                  <Button layoutX="426.0" layoutY="322.0" mnemonicParsing="false" text="Statystyki" />
+                  <ChoiceBox fx:id="foodChoiceBox" layoutX="208.0" layoutY="14.0" prefHeight="25.0" prefWidth="143.0" />
+                  <TextField fx:id="foodMealTextField" layoutX="14.0" layoutY="14.0" prefWidth="120.0" promptText="Posiłek" AnchorPane.leftAnchor="10.0" />
+                  <TextField fx:id="foodCaloriesTextField" layoutX="141.0" layoutY="14.0" prefWidth="50.0" promptText="Kalorie" />
+                  <Button fx:id="foodAddButton" layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#foodAddButtonOnAction" prefWidth="80.0" text="Dodaj" />
+                  <Button layoutX="517.0" layoutY="322.0" mnemonicParsing="false" text="Statystyki" />
+                  <DatePicker fx:id="foodDatePicker" layoutX="373.0" layoutY="14.0" prefHeight="25.0" prefWidth="126.0" />
+                  <Label layoutX="19.0" layoutY="326.0" text="Aktualne dzienne zapotrzebowanie kaloryczne:" />
+                  <Label layoutX="296.0" layoutY="326.0" text="Kcal" />
                </children>
             </AnchorPane>
         </content>

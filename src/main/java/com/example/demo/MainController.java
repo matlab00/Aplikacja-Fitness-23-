@@ -35,11 +35,30 @@ public class MainController implements Initializable {
     @FXML
     public ChoiceBox foodChoiceBox;
     public TableColumn runMetColumn;
+    public DatePicker gymDatePicker;
+    public ChoiceBox gymChoiceBox;
+    public TextField gymTimeTextField;
+    public TableColumn gymDateTableColumn;
+    public TableColumn gymCalorieTableColumn;
+    public TableColumn gymMetTableColumn;
+    public TableColumn gymTimeTableColumn;
+    public TableColumn gymExTableColumn;
+    public TableView gymTableView;
+    public DatePicker foodDatePicker;
+    public Button foodAddButton;
+    public TextField foodCaloriesTextField;
+    public TextField foodMealTextField;
+    public TableColumn foodDateTableColumn;
+    public TableColumn foodCategoryTableColumn;
+    public TableColumn foodCaloriesTableColumn;
+    public TableColumn foodMealTableColumn;
+    public TableView foodTableView;
 
     private String[] food = {"Śniadanie","Obiad", "Kolacja"};
 
     private String[] sex = {"Mężczyzna", "Kobieta"};
     private String[] metString = {"Niskie", "Średnie", "Szybkie", "Sprint" };
+    private String[] excercises = {"Pompki", "Brzuszki", "Przysiady", "Podciąganie", "Wyciskanie sztangi", "Martwy ciąg", "Przysiady ze sztangą"};
 
     public TextField runDataTextField;
     public Button runAddButton;
@@ -88,6 +107,9 @@ public class MainController implements Initializable {
         runMetChoiceBox.setValue("Tempo");
         runMetChoiceBox.getItems().addAll(metString);
 
+        gymChoiceBox.setValue("Ćwiczenie");
+        gymChoiceBox.getItems().addAll(excercises);
+
 
         runDistanceColumn.setCellValueFactory(new PropertyValueFactory<>("Dystans"));
         runCaloriesColumn.setCellValueFactory(new PropertyValueFactory<>("Kalorie"));
@@ -100,6 +122,17 @@ public class MainController implements Initializable {
         bmrTableColumn.setCellValueFactory(new PropertyValueFactory<>("BMR"));
         bmiTableColumn.setCellValueFactory(new PropertyValueFactory<>("BMI"));
         dataDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
+
+        gymExTableColumn.setCellValueFactory(new PropertyValueFactory<>("Cwiczenie"));
+        gymTimeTableColumn.setCellValueFactory(new PropertyValueFactory<>("Czas"));
+        gymMetTableColumn.setCellValueFactory(new PropertyValueFactory<>("Met"));
+        gymCalorieTableColumn.setCellValueFactory(new PropertyValueFactory<>("Kalorie"));
+        gymDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
+
+        foodMealTableColumn.setCellValueFactory((new PropertyValueFactory<>("Posilek")));
+        foodCaloriesTableColumn.setCellValueFactory((new PropertyValueFactory<>("Kalorie")));
+        foodCategoryTableColumn.setCellValueFactory((new PropertyValueFactory<>("Rodzaj")));
+        foodDateTableColumn.setCellValueFactory((new PropertyValueFactory<>("Data")));
 
         DataDBConnection dataDBConnection = new DataDBConnection();
         ObservableList<User> userArray = dataDBConnection.getUser();
@@ -118,10 +151,19 @@ public class MainController implements Initializable {
         dataTableView.refresh();
 
         runTableView.getItems().clear();
-        DataDBConnection dataDBConnection1 = new DataDBConnection();
-        ObservableList<Bieganie> newDataArray1 = FXCollections.observableArrayList(dataDBConnection1.getBieganie());
+        ObservableList<Bieganie> newDataArray1 = FXCollections.observableArrayList(dataDBConnection.getBieganie());
         runTableView.getItems().addAll(newDataArray1);
         runTableView.refresh();
+
+        gymTableView.getItems().clear();
+        ObservableList<Silownia> newDataArray2 = FXCollections.observableArrayList(dataDBConnection.getSilownia());
+        gymTableView.getItems().addAll(newDataArray2);
+        gymTableView.refresh();
+
+        foodTableView.getItems().clear();
+        ObservableList<Jedzenie> newDataArray3 = FXCollections.observableArrayList(dataDBConnection.getJedzenie());
+        foodTableView.getItems().addAll(newDataArray3);
+        foodTableView.refresh();
     }
 
     private void updateUser() {
@@ -181,7 +223,7 @@ public class MainController implements Initializable {
                     stmt.setString(3, ageChoiceBox.getValue().toString());
                     stmt.setInt(4, Integer.parseInt(heightTextField.getText()));
                     //if (!getDate().toString().isEmpty()) {
-                        stmt.setString(5, getDate());
+                        stmt.setString(5, getDate(dataDatePicker));
                    // } else {
                       //  stmt.setString(5, getCurrentDate());
                   //  }
@@ -224,6 +266,37 @@ public class MainController implements Initializable {
         return 0;
     }
 
+    private Integer getGymMet() {
+        Integer met;
+        String cwiczenie = gymChoiceBox.getValue().toString();
+        switch (cwiczenie) {
+            case "Pompki":
+                met = 12;
+                return met;
+            case "Brzuszki":
+                met = 8;
+                return met;
+            case "Przysiady":
+                met = 10;
+                return met;
+            case "Podciąganie":
+                met = 15;
+                return met;
+            case "Wyciskanie sztangi":
+                met = 20;
+                return met;
+            case "Martwy ciąg":
+                met = 18;
+                return met;
+            case "Przysiady ze sztangą":
+                met = 19;
+                return met;
+            default:
+                return -1;
+        }
+
+    }
+
     public void runButtonOnAction(ActionEvent actionEvent) {
 
 
@@ -245,9 +318,9 @@ public class MainController implements Initializable {
 
                 stmt.setInt(1, FXMLConnector.LogInfo.getUserID());
                 stmt.setDouble(2, Double.parseDouble(runDistanceTextField.getText()));
-                stmt.setDouble(3,calculateCalories());
+                stmt.setDouble(3,calculateRunCalories());
                 stmt.setDouble(4,Double.parseDouble(runTimeTextField.getText().toString()));
-                stmt.setString(5,getRunDate());
+                stmt.setString(5,getDate(runDatePicker));
                 stmt.setInt(6,getMet());
 
                 int rowsAffected = stmt.executeUpdate();
@@ -266,7 +339,94 @@ public class MainController implements Initializable {
 
     }
 
-    private Double calculateCalories() {
+    public void gymAddButtonOnAction(ActionEvent actionEvent) {
+
+
+        System.out.println("user is: "+FXMLConnector.LogInfo.getLogData());
+
+        /*if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();
+        }*/
+
+        try {
+            DataDBConnection dataDBConnection = new DataDBConnection();
+
+            String sql = "INSERT INTO Silownia (UserID, cwiczenie, MET, czas, data, kalorie ) VALUES (?,?,?,?,?,?)";
+            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
+                stmt.setInt(1, FXMLConnector.LogInfo.getUserID());
+                stmt.setString(2, gymChoiceBox.getValue().toString());
+                stmt.setDouble(3,getGymMet());
+                stmt.setDouble(4,Double.parseDouble(gymTimeTextField.getText().toString()));
+                stmt.setString(5,getDate(gymDatePicker));
+                stmt.setDouble(6,calculateGymCalories());
+
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            /*Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();*/
+        }
+        updateDataTable();
+
+    }
+
+    private Double calculateGymCalories() {
+        ObservableList<Data> dataList = dataTableView.getItems();
+        int size = dataList.size();
+        Data lastItem = dataList.get(size-1);
+        Integer lastValue = weightTableColumn.getCellData(lastItem);
+
+        Double calories;
+        String cwiczenie = gymChoiceBox.getValue().toString();
+        System.out.println(cwiczenie);
+        Double time = Double.parseDouble(gymTimeTextField.getText().toString());
+        switch (cwiczenie) {
+            case "Pompki":
+                calories = time * (12*3.5*lastValue)/200;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Brzuszki":
+                calories = time * (8*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Przysiady":
+                calories = time * (10*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Podciąganie":
+                calories = time * (15*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Wyciskanie sztangi":
+                calories = time * (20*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Martwy ciąg":
+                calories = time * (8*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Przysiady ze sztangą":
+                calories = time * (19*3.5*lastValue)/200;;
+                System.out.println("kalorie:"+calories);
+                return calories;
+
+            default:
+                return 1.0;
+        }
+    }
+
+    private Double calculateRunCalories() {
         ObservableList<Data> dataList = dataTableView.getItems();
         int size = dataList.size();
         Data lastItem = dataList.get(size-1);
@@ -299,13 +459,6 @@ public class MainController implements Initializable {
         }
     }
 
-    public void abcd() {
-        ObservableList<Data> dataList = dataTableView.getItems();
-        int size = dataList.size();
-        Data lastItem = dataList.get(size-1);
-        Integer lastValue = weightTableColumn.getCellData(lastItem);
-        System.out.println("last value" +lastValue);
-    }
     private Integer calculateBMR() {
 
         if (sexChoiceBox.getValue().toString().equals("Mężczyzna")) {
@@ -455,13 +608,9 @@ public class MainController implements Initializable {
 
         });
     }
-    public String getDate() {
-        LocalDate date = dataDatePicker.getValue();
-        String formatedDate = date.format((DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-        return formatedDate;
-    }
-    public String getRunDate() {
-        LocalDate date = runDatePicker.getValue();
+
+    public String getDate(DatePicker datePicker) {
+        LocalDate date = datePicker.getValue();
         String formatedDate = date.format((DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         return formatedDate;
     }
@@ -501,5 +650,44 @@ public class MainController implements Initializable {
         alert.setHeaderText("Błąd");
         alert.setContentText(text);
         alert.showAndWait();
+    }
+
+    public void foodAddButtonOnAction(ActionEvent actionEvent) {
+        System.out.println("user is: "+FXMLConnector.LogInfo.getLogData());
+
+        /*if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();
+        }*/
+
+        try {
+            DataDBConnection dataDBConnection = new DataDBConnection();
+
+            String sql = "INSERT INTO Jedzenie (UserID, posilek, rodzaj, kalorie, data) VALUES (?,?,?,?,?)";
+            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
+                stmt.setInt(1, FXMLConnector.LogInfo.getUserID());
+                stmt.setString(2, foodMealTextField.getText().toString());
+                stmt.setString(3,foodChoiceBox.getValue().toString());
+                stmt.setInt(4, Integer.parseInt(foodCaloriesTextField.getText().toString()));
+                stmt.setString(5,getDate(foodDatePicker));
+
+
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            /*Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();*/
+        }
+        updateDataTable();
     }
 }

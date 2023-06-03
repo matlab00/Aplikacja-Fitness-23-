@@ -101,6 +101,80 @@ public class DataDBConnection {
         return dataList;
     }
 
+    public ObservableList<Silownia> getSilownia() {
+        ObservableList<Silownia> dataList = FXCollections.observableArrayList();
+
+        Integer profile = FXMLConnector.LogInfo.getUserID();
+        System.out.println("Profile: " + profile);
+        try {
+
+            String query = "SELECT * FROM Silownia where UserID = '" + profile + "'";
+            System.out.println("Query: "+query);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+            while (resultSet.next()) {
+                Silownia data = new Silownia(
+                        resultSet.getString("cwiczenie"),
+                        resultSet.getInt("kalorie"),
+                        resultSet.getDouble("czas"),
+                        resultSet.getString("data"),
+                        resultSet.getDouble("met"),
+                        resultSet.getInt("id")
+                );
+                System.out.println("IMPORT Z BAZY DANYCH:");
+                System.out.println("Cwiczenie: " + data.getCwiczenie());
+                System.out.println("Kalorie: " + data.getKalorie());
+                System.out.println("Date: " + data.getData());
+                System.out.println("Met: " + data.getMet());
+                System.out.println("Czas: " + data.getCzas());
+                System.out.println("ID: " + data.getId());
+                System.out.println("----------------------------");
+                dataList.add(data);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Silownia[] dataArray = new Silownia[dataList.size()];
+        dataArray = dataList.toArray(dataArray);
+        return dataList;
+    }
+
+    public ObservableList<Jedzenie> getJedzenie() {
+        ObservableList<Jedzenie> dataList = FXCollections.observableArrayList();
+
+        Integer profile = FXMLConnector.LogInfo.getUserID();
+        System.out.println("Profile: " + profile);
+        try {
+
+            String query = "SELECT * FROM Jedzenie where UserID = '" + profile + "'";
+            System.out.println("Query: "+query);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+            while (resultSet.next()) {
+                Jedzenie data = new Jedzenie(
+                        resultSet.getString("posilek"),
+                        resultSet.getString("rodzaj"),
+                        resultSet.getInt("kalorie"),
+                        resultSet.getString("data"),
+                        resultSet.getInt("id")
+                );
+
+                dataList.add(data);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Jedzenie[] dataArray = new Jedzenie[dataList.size()];
+        dataArray = dataList.toArray(dataArray);
+        return dataList;
+    }
+
     public ObservableList getUser() {
         //ArrayList<User> dataList = new ArrayList<>();
 
