@@ -10,9 +10,18 @@ public class FXMLConnector {
         private static StringProperty logData = new SimpleStringProperty();
         private static ObservableList<Data> dataList;
         private static TableColumn[] tableColumn;
+        private static Integer UserID;
         public static StringProperty logDataProperty() { return logData; }
         public static void setLogData(String data) { logData.set(data); }
         public static String getLogData() { return logData.get(); }
+
+        public static Integer getUserID() {
+            return UserID;
+        }
+
+        public static void setUserID(Integer userID) {
+            UserID = userID;
+        }
 
         public static void setObservableList(ObservableList<Data> list) {
             dataList = list;

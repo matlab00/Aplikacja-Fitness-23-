@@ -34,10 +34,13 @@ public class MainController implements Initializable {
     //region Variables
     @FXML
     public ChoiceBox foodChoiceBox;
+    public TableColumn runMetColumn;
 
-    public String[] food = {"Śniadanie","Obiad", "Kolacja"};
+    private String[] food = {"Śniadanie","Obiad", "Kolacja"};
 
-    public String[] sex = {"Mężczyzna", "Kobieta"};
+    private String[] sex = {"Mężczyzna", "Kobieta"};
+    private String[] metString = {"Niskie", "Średnie", "Szybkie", "Sprint" };
+
     public TextField runDataTextField;
     public Button runAddButton;
     public TextField runCaloriesTextField;
@@ -68,6 +71,8 @@ public class MainController implements Initializable {
     public Button addUserButton;
     public Label activeUserLabel;
     public DatePicker dataDatePicker;
+    public DatePicker runDatePicker;
+    public ChoiceBox runMetChoiceBox;
     //endregion
 
 
@@ -80,10 +85,15 @@ public class MainController implements Initializable {
             ageChoiceBox.getItems().add(i);
         }
 
+        runMetChoiceBox.setValue("Tempo");
+        runMetChoiceBox.getItems().addAll(metString);
+
+
         runDistanceColumn.setCellValueFactory(new PropertyValueFactory<>("Dystans"));
         runCaloriesColumn.setCellValueFactory(new PropertyValueFactory<>("Kalorie"));
         runDataColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
         runTimeColumn.setCellValueFactory(new PropertyValueFactory<>("Czas"));
+        runMetColumn.setCellValueFactory(new PropertyValueFactory<>("Met"));
 
         weightTableColumn.setCellValueFactory(new PropertyValueFactory<>("Masa"));
         heightTableColumn.setCellValueFactory(new PropertyValueFactory<>("Wzrost"));
@@ -92,55 +102,39 @@ public class MainController implements Initializable {
         dataDateTableColumn.setCellValueFactory(new PropertyValueFactory<>("Data"));
 
         DataDBConnection dataDBConnection = new DataDBConnection();
-        ObservableList dataArray = dataDBConnection.getUser();
-        //ObservableList data2Array = FXCollections.observableArrayList(dataDBConnection.getData());
-        //System.out.println("Data: " + dataDBConnection.getData());
-        //System.out.println("User: " + dataArray.toString());
-        selectUser.setItems(dataArray);
-        //dataTableView.getItems().addAll(data2Array);
+        ObservableList<User> userArray = dataDBConnection.getUser();
 
+        for (User user : userArray) {
+            selectUser.getItems().add(user.getUser_name());
+        }
 
     }
 
     public void updateDataTable() {
         dataTableView.getItems().clear();
-        System.out.println("table cleared");
         DataDBConnection dataDBConnection = new DataDBConnection();
         ObservableList<Data> newDataArray = FXCollections.observableArrayList(dataDBConnection.getData());
         dataTableView.getItems().addAll(newDataArray);
         dataTableView.refresh();
 
+        runTableView.getItems().clear();
+        DataDBConnection dataDBConnection1 = new DataDBConnection();
+        ObservableList<Bieganie> newDataArray1 = FXCollections.observableArrayList(dataDBConnection1.getBieganie());
+        runTableView.getItems().addAll(newDataArray1);
+        runTableView.refresh();
     }
 
     private void updateUser() {
         selectUser.getItems().clear();
         DataDBConnection dataDBConnection = new DataDBConnection();
+        ObservableList<User> userArray = dataDBConnection.getUser();
 
-        ObservableList data = dataDBConnection.getUser();
-
-        ObservableList oldData = selectUser.getItems();
-
-        Set uniqueSet = new HashSet();
-        uniqueSet.addAll(data);
-        uniqueSet.addAll(oldData);
-
-        ObservableList newData = FXCollections.observableArrayList();
-
-        newData.addAll(uniqueSet);
-        selectUser.setItems(newData);
+        for (User user : userArray) {
+            selectUser.getItems().add(user.getUser_name());
+        }
 
     }
 
-    public void runButtonOnAction(ActionEvent actionEvent) {
-
-        Bieganie bieganie = new Bieganie(
-                Integer.parseInt(runDistanceTextField.getText()),
-                Integer.parseInt(runCaloriesTextField.getText()),
-                Integer.parseInt(runTimeTextField.getText()),
-                runDataTextField.getText());
-
-        runTableView.getItems().add(bieganie);
-    }
     public void runStatButtonOnAction(ActionEvent actionEvent) {
 
         ObservableList<Bieganie> data = runTableView.getItems();
@@ -179,7 +173,7 @@ public class MainController implements Initializable {
             try {
                 DataDBConnection dataDBConnection = new DataDBConnection();
 
-                String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI, user_name) VALUES (?,?,?,?,?,?,?,?)";
+                String sql = "INSERT INTO Data (weight, sex, age, height, date, BMR, BMI, UserID) VALUES (?,?,?,?,?,?,?,?)";
                 try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
 
                     stmt.setInt(1, Integer.parseInt(weightTextField.getText()));
@@ -193,7 +187,7 @@ public class MainController implements Initializable {
                   //  }
                     stmt.setInt(6, calculateBMR());
                     stmt.setInt(7, calculateBMI());
-                    stmt.setString(8, selectUser.getValue().toString());
+                    stmt.setInt(8, FXMLConnector.LogInfo.getUserID());
                     int rowsAffected = stmt.executeUpdate();
                     System.out.println(rowsAffected + " wiersz dodany do tabeli");
                 } catch (SQLException e) {
@@ -209,6 +203,109 @@ public class MainController implements Initializable {
             updateDataTable();
 
     }
+
+    private Integer getMet() {
+        Integer met;
+        String tempo = runMetChoiceBox.getValue().toString();
+        switch (tempo) {
+            case "Niskie":
+                met = 7;
+                return met;
+            case "Średnie":
+                met = 10;
+                return met;
+            case "Szybkie":
+                met = 14;
+                return met;
+            case "Sprint":
+                met = 20;
+                return met;
+        }
+        return 0;
+    }
+
+    public void runButtonOnAction(ActionEvent actionEvent) {
+
+
+        System.out.println("user is: "+FXMLConnector.LogInfo.getLogData());
+
+        /*if (weightTextField.getText().isEmpty() || heightTextField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();
+        }*/
+
+        try {
+            DataDBConnection dataDBConnection = new DataDBConnection();
+
+            String sql = "INSERT INTO Bieganie (UserID, dystans, kalorie, czas, data, met ) VALUES (?,?,?,?,?,?)";
+            try (PreparedStatement stmt = dataDBConnection.getConnection().prepareStatement(sql)) {
+
+                stmt.setInt(1, FXMLConnector.LogInfo.getUserID());
+                stmt.setDouble(2, Double.parseDouble(runDistanceTextField.getText()));
+                stmt.setDouble(3,calculateCalories());
+                stmt.setDouble(4,Double.parseDouble(runTimeTextField.getText().toString()));
+                stmt.setString(5,getRunDate());
+                stmt.setInt(6,getMet());
+
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println(rowsAffected + " wiersz dodany do tabeli");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Brak danych");
+            alert.setHeaderText("Błąd");
+            alert.setContentText("Brak wymaganych danych");
+            alert.showAndWait();
+        }
+        updateDataTable();
+
+    }
+
+    private Double calculateCalories() {
+        ObservableList<Data> dataList = dataTableView.getItems();
+        int size = dataList.size();
+        Data lastItem = dataList.get(size-1);
+        Integer lastValue = weightTableColumn.getCellData(lastItem);
+        //System.out.println("czas biegu:"+((Integer.parseInt(runTimeTextField.getText().toString()))/60));
+        Double calories;
+        String tempo = runMetChoiceBox.getValue().toString();
+        System.out.println(tempo);
+        Double time = Double.parseDouble(runTimeTextField.getText().toString())/60;
+        switch (tempo) {
+            case "Niskie":
+                calories = 7.0 * lastValue * time ;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Średnie":
+                calories = 10.0 * lastValue * time;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Szybkie":
+                calories = 14.0 * lastValue * time;
+                System.out.println("kalorie:"+calories);
+                return calories;
+            case "Sprint":
+                calories = 20.0 * lastValue * time;
+                System.out.println("kalorie:"+calories);
+                return calories;
+
+            default:
+                return 1.0;
+        }
+    }
+
+    public void abcd() {
+        ObservableList<Data> dataList = dataTableView.getItems();
+        int size = dataList.size();
+        Data lastItem = dataList.get(size-1);
+        Integer lastValue = weightTableColumn.getCellData(lastItem);
+        System.out.println("last value" +lastValue);
+    }
     private Integer calculateBMR() {
 
         if (sexChoiceBox.getValue().toString().equals("Mężczyzna")) {
@@ -222,21 +319,9 @@ public class MainController implements Initializable {
     }
 
     private Integer calculateBMI() {
-        Integer bmi = Integer.parseInt(weightTextField.getText())/(Integer.parseInt(heightTextField.getText())/100)^2;
+        Integer bmi = Integer.parseInt(weightTextField.getText())/((Integer.parseInt(heightTextField.getText())/100)^2);
         return bmi;
     }
-
-    String getCurrentDate() {
-
-        if (dataDateTextField.getText().isEmpty()) {
-            String date = LocalDate.now().toString();
-            return date;
-        } else {
-            String date = dataDateTextField.getText();
-            return date;
-        }
-    }
-
 
     public void dataStatButtonOnAction(ActionEvent actionEvent) {
 
@@ -310,15 +395,27 @@ public class MainController implements Initializable {
 
     public void changeUserButtonOnAction(ActionEvent actionEvent) {
 
+        DataDBConnection dataDBConnection = new DataDBConnection();
+        ObservableList<User> userArray = dataDBConnection.getUser();
+
         FXMLConnector.LogInfo.setLogData(selectUser.getValue().toString());
         System.out.println(FXMLConnector.LogInfo.getLogData());
+
+        for (User item : userArray) {
+            if (item.getUser_name().toString().equals(selectUser.getValue().toString())) {
+                Integer activeUserId = item.getUserID();
+                System.out.println("active user id: " + activeUserId);
+                FXMLConnector.LogInfo.setUserID(activeUserId);
+            }
+        }
+        System.out.println("ActiveUserID: "+FXMLConnector.LogInfo.getUserID());
         activeUserLabel.setText(FXMLConnector.LogInfo.getLogData());
         updateDataTable();
     }
 
     public void deleteUserOnAction(ActionEvent actionEvent) {
 
-        String profile = FXMLConnector.LogInfo.getLogData();
+        Integer profile = FXMLConnector.LogInfo.getUserID();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Potwierdzenie");
         alert.setHeaderText("Czy na pewno chcesz usunąć profil?");
@@ -332,8 +429,8 @@ public class MainController implements Initializable {
             if (buttonType == buttonTypeOK) {
                 try {
                     DataDBConnection dataDBConnection = new DataDBConnection();
-                    String query = "DELETE FROM Data where user_name = '"+profile+"'";
-                    String query2 = "DELETE FROM Users where user_name = '"+profile+"'";
+                    String query = "DELETE FROM Data where UserID = '"+profile+"'";
+                    String query2 = "DELETE FROM Users where UserID = '"+profile+"'";
                     try (Connection connection = dataDBConnection.getConnection()) {
 
                         PreparedStatement preparedStatement1 = connection.prepareStatement(query);
@@ -360,6 +457,11 @@ public class MainController implements Initializable {
     }
     public String getDate() {
         LocalDate date = dataDatePicker.getValue();
+        String formatedDate = date.format((DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        return formatedDate;
+    }
+    public String getRunDate() {
+        LocalDate date = runDatePicker.getValue();
         String formatedDate = date.format((DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         return formatedDate;
     }

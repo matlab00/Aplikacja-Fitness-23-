@@ -66,17 +66,17 @@
                     <columns>
                       <TableColumn fx:id="runDistanceColumn" prefWidth="111.33334350585938" text="Dystans" />
                         <TableColumn fx:id="runTimeColumn" prefWidth="103.33334350585938" text="Czas" />
-                        <TableColumn prefWidth="113.3333740234375" text="MET" />
+                        <TableColumn fx:id="runMetColumn" prefWidth="113.3333740234375" text="MET" />
                       <TableColumn fx:id="runCaloriesColumn" prefWidth="100.66668701171875" text="Kalorie" />
                         <TableColumn fx:id="runDataColumn" prefWidth="170.0" text="Data" />
                     </columns>
                   </TableView>
                   <TextField fx:id="runDistanceTextField" layoutX="10.0" layoutY="14.0" prefHeight="25.0" prefWidth="83.0" promptText="Dystans" AnchorPane.leftAnchor="10.0" />
-                  <TextField fx:id="runDataTextField" layoutX="294.0" layoutY="14.0" prefWidth="120.0" promptText="Data" AnchorPane.leftAnchor="294.0" />
                   <Button fx:id="runAddButton" layoutX="428.0" layoutY="14.0" mnemonicParsing="false" onAction="#runButtonOnAction" prefHeight="11.0" prefWidth="80.0" text="Dodaj" AnchorPane.leftAnchor="428.0" />
                   <Button fx:id="runStatButton" layoutX="520.0" layoutY="14.0" mnemonicParsing="false" onAction="#runStatButtonOnAction" prefHeight="11.0" prefWidth="80.0" text="Statystyki" />
                   <TextField fx:id="runTimeTextField" layoutX="106.0" layoutY="14.0" prefHeight="25.0" prefWidth="50.0" promptText="Czas" />
-                  <ChoiceBox layoutX="182.0" layoutY="14.0" prefHeight="25.0" prefWidth="92.0" />
+                  <ChoiceBox fx:id="runMetChoiceBox" layoutX="182.0" layoutY="14.0" prefHeight="25.0" prefWidth="92.0" />
+                  <DatePicker fx:id="runDatePicker" layoutX="289.0" layoutY="14.0" prefHeight="25.0" prefWidth="131.0" />
                </children></AnchorPane>
       </content>
     </Tab>

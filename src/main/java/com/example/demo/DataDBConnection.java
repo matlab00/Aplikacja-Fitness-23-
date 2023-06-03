@@ -23,11 +23,11 @@ public class DataDBConnection {
     public ObservableList<Data> getData() {
         ObservableList<Data> dataList = FXCollections.observableArrayList();
 
-        String profile = FXMLConnector.LogInfo.getLogData();
+        Integer profile = FXMLConnector.LogInfo.getUserID();
         System.out.println("Profile: " + profile);
         try {
 
-            String query = "SELECT * FROM DATA where user_name = '" + profile + "'";
+            String query = "SELECT * FROM DATA where UserID = '" + profile + "'";
             System.out.println("Query: "+query);
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -60,10 +60,51 @@ public class DataDBConnection {
         return dataList;
     }
 
-    public ObservableList getUser() {
-        ArrayList<User> dataList = new ArrayList<>();
+    public ObservableList<Bieganie> getBieganie() {
+        ObservableList<Bieganie> dataList = FXCollections.observableArrayList();
 
-        ObservableList data = FXCollections.observableArrayList();
+        Integer profile = FXMLConnector.LogInfo.getUserID();
+        System.out.println("Profile: " + profile);
+        try {
+
+            String query = "SELECT * FROM Bieganie where UserID = '" + profile + "'";
+            System.out.println("Query: "+query);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+            while (resultSet.next()) {
+                Bieganie data = new Bieganie(
+                        resultSet.getDouble("dystans"),
+                        resultSet.getInt("kalorie"),
+                        resultSet.getDouble("czas"),
+                        resultSet.getString("data"),
+                        resultSet.getDouble("met"),
+                        resultSet.getInt("id")
+                );
+                System.out.println("IMPORT Z BAZY DANYCH:");
+                System.out.println("Dystans: " + data.getDystans());
+                System.out.println("Kalorie: " + data.getKalorie());
+                System.out.println("Date: " + data.getData());
+                System.out.println("Met: " + data.getMet());
+                System.out.println("Czas: " + data.getCzas());
+                System.out.println("ID: " + data.getId());
+                System.out.println("----------------------------");
+                dataList.add(data);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Bieganie[] dataArray = new Bieganie[dataList.size()];
+        dataArray = dataList.toArray(dataArray);
+        return dataList;
+    }
+
+    public ObservableList getUser() {
+        //ArrayList<User> dataList = new ArrayList<>();
+
+        ObservableList<User> dataList = FXCollections.observableArrayList();
         try {
 
             String query = "SELECT * FROM USERS";
@@ -72,12 +113,14 @@ public class DataDBConnection {
 
 
             while (resultSet.next()) {
-                /*User data = new User(
-                        resultSet.getString("user_name")
+                User data = new User(
+                        resultSet.getString("user_name"),
+                        resultSet.getInt("UserID")
                 );
-                System.out.println("Weight: " + data.getUser_name());
-                dataList.add(data);*/
-                data.add((resultSet.getString("user_name")));
+                System.out.println("username: " + data.getUser_name());
+                System.out.println("userid: " + data.getUserID());
+                dataList.add(data);
+                //data.add((resultSet.getString("user_name")));
                 System.out.println(resultSet.getString("user_name"));
             }
 
@@ -86,7 +129,7 @@ public class DataDBConnection {
         }
         User[] dataArray = new User[dataList.size()];
         dataArray = dataList.toArray(dataArray);
-        return data;
+        return dataList;
     }
 
 

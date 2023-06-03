@@ -1,64 +1,76 @@
 package com.example.demo;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Bieganie {
 
-    private SimpleIntegerProperty dystans;
+    private SimpleDoubleProperty dystans;
     private SimpleIntegerProperty kalorie;
+    private SimpleDoubleProperty met;
+    private SimpleDoubleProperty czas;
+    private SimpleStringProperty data;
+    private Integer Id;
 
-    public int getMet() {
-        return met.get();
+    public Bieganie(Double dystans, Integer kalorie, Double czas, String data, Double met, Integer Id ) {
+
+        this.dystans = new SimpleDoubleProperty(dystans);
+        this.kalorie = new SimpleIntegerProperty(kalorie);
+        this.data = new SimpleStringProperty(data);
+        this.czas = new SimpleDoubleProperty(czas);
+        this.met = new SimpleDoubleProperty(czas);
+        this.Id = Id;
     }
 
-    public SimpleIntegerProperty metProperty() {
-        return met;
+    //region Getters and Setters
+
+    public double getDystans() {
+        return dystans.get();
     }
 
-    public void setMet(int met) {
-        this.met.set(met);
+    public SimpleDoubleProperty dystansProperty() {
+        return dystans;
+    }
+
+    public void setDystans(double dystans) {
+        this.dystans.set(dystans);
+    }
+
+    public int getKalorie() {
+        return kalorie.get();
+    }
+
+    public SimpleIntegerProperty kalorieProperty() {
+        return kalorie;
     }
 
     public void setKalorie(int kalorie) {
         this.kalorie.set(kalorie);
     }
 
-    public Integer getId() {
-        return Id;
+    public double getMet() {
+        return met.get();
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public SimpleDoubleProperty metProperty() {
+        return met;
     }
 
-    public void setDystans(int dystans) {
-        this.dystans.set(dystans);
+    public void setMet(double met) {
+        this.met.set(met);
     }
 
-    private SimpleIntegerProperty met;
-    private SimpleIntegerProperty czas;
-    private SimpleStringProperty data;
-    private Integer Id;
-
-    public int getCzas() {
+    public double getCzas() {
         return czas.get();
     }
 
-    public SimpleIntegerProperty czasProperty() {
+    public SimpleDoubleProperty czasProperty() {
         return czas;
     }
 
-    public void setCzas(int czas) {
+    public void setCzas(double czas) {
         this.czas.set(czas);
-    }
-
-    public Bieganie(Integer dystans, Integer kalorie, Integer czas, String data) {
-
-        this.dystans = new SimpleIntegerProperty(dystans);
-        this.kalorie = new SimpleIntegerProperty(kalorie);
-        this.data = new SimpleStringProperty(data);
-        this.czas = new SimpleIntegerProperty(czas);
     }
 
     public String getData() {
@@ -73,27 +85,13 @@ public class Bieganie {
         this.data.set(data);
     }
 
-    public Integer getKalorie() {
-        return kalorie.get();
+    public Integer getId() {
+        return Id;
     }
 
-    public SimpleIntegerProperty kalorieProperty() {
-        return kalorie;
+    public void setId(Integer id) {
+        Id = id;
     }
 
-    public void setKalorie(Integer kalorie) {
-        this.kalorie.set(kalorie);
-    }
-
-    public Integer getDystans() {
-        return dystans.get();
-    }
-
-    public SimpleIntegerProperty dystansProperty() {
-        return dystans;
-    }
-
-    public void setDystans(Integer dystans) {
-        this.dystans.set(dystans);
-    }
+    //endregion
 }
