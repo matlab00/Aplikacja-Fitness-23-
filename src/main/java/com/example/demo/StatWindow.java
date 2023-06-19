@@ -106,11 +106,9 @@ public class StatWindow {
             NumberAxis yAxis = new NumberAxis();
             yAxis.setLabel("Waga");
 
-            //LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName("Waga/Data");
 
-            //data.sort(Comparator.comparing(item -> tableColumns[1].getCellData(item)));
 
             for (Data item : data) {
                 series.getData().add(new XYChart.Data(tableColumns[0].getCellData(item), tableColumns[3].getCellData(item)));

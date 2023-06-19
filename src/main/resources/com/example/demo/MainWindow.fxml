@@ -80,6 +80,27 @@
                </children></AnchorPane>
       </content>
     </Tab>
+      <Tab text="Jedzenie">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="foodTableView" layoutX="10.0" layoutY="57.0" prefHeight="302.0" prefWidth="600.0">
+                    <columns>
+                      <TableColumn fx:id="foodMealTableColumn" prefWidth="150.0" text="Posiłek" />
+                      <TableColumn fx:id="foodCaloriesTableColumn" prefWidth="150.0" text="Kalorie" />
+                        <TableColumn fx:id="foodCategoryTableColumn" prefWidth="150.0" text="Rodzaj" />
+                        <TableColumn fx:id="foodDateTableColumn" prefWidth="150.0" text="Data" />
+                    </columns>
+                  </TableView>
+                  <ChoiceBox fx:id="foodChoiceBox" layoutX="208.0" layoutY="14.0" prefHeight="25.0" prefWidth="143.0" />
+                  <TextField fx:id="foodMealTextField" layoutX="14.0" layoutY="14.0" prefWidth="120.0" promptText="Posiłek" AnchorPane.leftAnchor="10.0" />
+                  <TextField fx:id="foodCaloriesTextField" layoutX="141.0" layoutY="14.0" prefWidth="50.0" promptText="Kalorie" />
+                  <Button layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#foodAddButtonOnAction" prefWidth="80.0" text="Dodaj" />
+                  <DatePicker fx:id="foodDatePicker" layoutX="373.0" layoutY="14.0" prefHeight="25.0" prefWidth="126.0" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
     <Tab text="Siłownia">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -96,34 +117,10 @@
                   </TableView>
                   <Button fx:id="gymAddButton" layoutX="432.0" layoutY="14.0" mnemonicParsing="false" onAction="#gymAddButtonOnAction" prefHeight="25.0" prefWidth="80.0" text="Dodaj" />
                   <ChoiceBox fx:id="gymChoiceBox" layoutX="11.0" layoutY="14.0" prefHeight="25.0" prefWidth="163.0" />
-                  <Button fx:id="gymStatButton" layoutX="529.0" layoutY="14.0" mnemonicParsing="false" text="Statystyki" />
+                  <Button fx:id="gymStatButton" layoutX="529.0" layoutY="14.0" mnemonicParsing="false" onAction="#gymStatButtonOnAction" text="Statystyki" />
                   <DatePicker fx:id="gymDatePicker" layoutX="266.0" layoutY="14.0" prefHeight="25.0" prefWidth="150.0" />
                </children></AnchorPane>
       </content>
     </Tab>
-      <Tab text="Jedzenie">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <TableView fx:id="foodTableView" layoutX="10.0" layoutY="57.0" prefHeight="247.0" prefWidth="600.0">
-                    <columns>
-                      <TableColumn fx:id="foodMealTableColumn" prefWidth="150.0" text="Posiłek" />
-                      <TableColumn fx:id="foodCaloriesTableColumn" prefWidth="150.0" text="Kalorie" />
-                        <TableColumn fx:id="foodCategoryTableColumn" prefWidth="150.0" text="Rodzaj" />
-                        <TableColumn fx:id="foodDateTableColumn" prefWidth="150.0" text="Data" />
-                    </columns>
-                  </TableView>
-                  <ChoiceBox fx:id="foodChoiceBox" layoutX="208.0" layoutY="14.0" prefHeight="25.0" prefWidth="143.0" />
-                  <TextField fx:id="foodMealTextField" layoutX="14.0" layoutY="14.0" prefWidth="120.0" promptText="Posiłek" AnchorPane.leftAnchor="10.0" />
-                  <TextField fx:id="foodCaloriesTextField" layoutX="141.0" layoutY="14.0" prefWidth="50.0" promptText="Kalorie" />
-                  <Button fx:id="foodAddButton" layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#foodAddButtonOnAction" prefWidth="80.0" text="Dodaj" />
-                  <Button layoutX="517.0" layoutY="322.0" mnemonicParsing="false" text="Statystyki" />
-                  <DatePicker fx:id="foodDatePicker" layoutX="373.0" layoutY="14.0" prefHeight="25.0" prefWidth="126.0" />
-                  <Label layoutX="19.0" layoutY="326.0" text="Aktualne dzienne zapotrzebowanie kaloryczne:" />
-                  <Label layoutX="296.0" layoutY="326.0" text="Kcal" />
-               </children>
-            </AnchorPane>
-        </content>
-      </Tab>
   </tabs>
 </TabPane>

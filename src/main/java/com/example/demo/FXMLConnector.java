@@ -9,6 +9,8 @@ public class FXMLConnector {
     public final class LogInfo {
         private static StringProperty logData = new SimpleStringProperty();
         private static ObservableList<Data> dataList;
+        private static ObservableList<Bieganie> rundataList;
+        private static ObservableList<Silownia> gymdataList;
         private static TableColumn[] tableColumn;
         private static Integer UserID;
         public static StringProperty logDataProperty() { return logData; }
@@ -28,6 +30,19 @@ public class FXMLConnector {
         }
         public static ObservableList<Data> getObservableList() {
             return dataList;
+        }
+
+        public static void setRunObservableList(ObservableList<Bieganie> list) {
+            rundataList = list;
+        }
+        public static ObservableList<Bieganie> getRunObservableList() {
+            return rundataList;
+        }
+        public static void setGymObservableList(ObservableList<Silownia> list) {
+            gymdataList = list;
+        }
+        public static ObservableList<Silownia> getGymObservableList() {
+            return gymdataList;
         }
 
         public static void setTableColumn(TableColumn[] column) {

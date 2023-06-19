@@ -53,13 +53,13 @@ public class MainController implements Initializable {
     public TableColumn foodCaloriesTableColumn;
     public TableColumn foodMealTableColumn;
     public TableView foodTableView;
+    public TextField foodMealKcalTextFieldArea;
 
     private String[] food = {"Śniadanie","Obiad", "Kolacja"};
 
     private String[] sex = {"Mężczyzna", "Kobieta"};
     private String[] metString = {"Niskie", "Średnie", "Szybkie", "Sprint" };
     private String[] excercises = {"Pompki", "Brzuszki", "Przysiady", "Podciąganie", "Wyciskanie sztangi", "Martwy ciąg", "Przysiady ze sztangą"};
-
     public TextField runDataTextField;
     public Button runAddButton;
     public TextField runCaloriesTextField;
@@ -179,26 +179,31 @@ public class MainController implements Initializable {
 
     public void runStatButtonOnAction(ActionEvent actionEvent) {
 
+        runTableView.getSortOrder().add(runDataColumn);
+        runDataColumn.setSortType(TableColumn.SortType.ASCENDING);
+        runTableView.sort();
+
         ObservableList<Bieganie> data = runTableView.getItems();
+        FXMLConnector.LogInfo.setRunObservableList(data);
+        TableColumn[] tableColumns = new TableColumn[3];
+        tableColumns[0] = runDataColumn;
+        tableColumns[1] = runDistanceColumn;
+        tableColumns[2] = runCaloriesColumn;
+        FXMLConnector.LogInfo.setTableColumn(tableColumns);
 
-        NumberAxis xAxis = new NumberAxis(0,100,10);
-        xAxis.setLabel("Dystans");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("RunStatWindow.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Statystyki");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
 
-        NumberAxis yAxis = new NumberAxis(0,100,10);
-        yAxis.setLabel("Czas");
-
-        LineChart lineChart = new LineChart(yAxis,xAxis);
-
-        XYChart.Series series = new XYChart.Series();
-
-        for (Bieganie item : data) {
-            series.getData().add(new XYChart.Data(runDistanceColumn.getCellData(item), runDistanceColumn.getCellData(item)));
         }
-
-        lineChart.getData().add(series);
-
-
     }
+
+
     public void dataAddButtonOnAction(ActionEvent actionEvent) {
 
 
@@ -491,26 +496,6 @@ public class MainController implements Initializable {
         tableColumns[3] = weightTableColumn;
         FXMLConnector.LogInfo.setTableColumn(tableColumns);
 
-
-
-        /*CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Data");
-
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Waga");
-
-        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Waga/Data");
-
-        data.sort(Comparator.comparing(item -> dataDateTableColumn.getCellData(item)));
-
-        for (Data item : data) {
-            series.getData().add(new XYChart.Data(dataDateTableColumn.getCellData(item), weightTableColumn.getCellData(item)));
-        }
-
-        lineChart.getData().add(series);*/
-
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("StatWindow.fxml"));
             Parent root = (Parent) fxmlLoader.load();
@@ -584,13 +569,22 @@ public class MainController implements Initializable {
                     DataDBConnection dataDBConnection = new DataDBConnection();
                     String query = "DELETE FROM Data where UserID = '"+profile+"'";
                     String query2 = "DELETE FROM Users where UserID = '"+profile+"'";
+                    String query3 = "DELETE FROM Silownia where UserID = '"+profile+"'";
+                    String query4 = "DELETE FROM Jedzenie where UserID = '"+profile+"'";
+                    String query5 = "DELETE FROM Bieganie where UserID = '"+profile+"'";
                     try (Connection connection = dataDBConnection.getConnection()) {
 
                         PreparedStatement preparedStatement1 = connection.prepareStatement(query);
                         PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                        PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+                        PreparedStatement preparedStatement4 = connection.prepareStatement(query4);
+                        PreparedStatement preparedStatement5 = connection.prepareStatement(query5);
 
                         int rowsAffected1 = preparedStatement1.executeUpdate();
                         int rowsAffected2 = preparedStatement2.executeUpdate();
+                        int rowsAffected3 = preparedStatement3.executeUpdate();
+                        int rowsAffected4 = preparedStatement4.executeUpdate();
+                        int rowsAffected5 = preparedStatement5.executeUpdate();
                         System.out.println(profile + "usunięty");
 
                     } catch (SQLException e) {
@@ -690,4 +684,30 @@ public class MainController implements Initializable {
         }
         updateDataTable();
     }
+
+    public void gymStatButtonOnAction(ActionEvent actionEvent) {
+        gymTableView.getSortOrder().add(gymDateTableColumn);
+        gymDateTableColumn.setSortType(TableColumn.SortType.ASCENDING);
+        gymTableView.sort();
+
+        ObservableList<Silownia> data = gymTableView.getItems();
+        FXMLConnector.LogInfo.setGymObservableList(data);
+        TableColumn[] tableColumns = new TableColumn[5];
+        tableColumns[0] = dataDateTableColumn;
+        tableColumns[1] = gymCalorieTableColumn;
+        FXMLConnector.LogInfo.setTableColumn(tableColumns);
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GymStatWindow.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Statystyki");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+
+        }
+    }
+
+
 }
